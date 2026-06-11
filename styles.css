@@ -1,0 +1,732 @@
+/* ==========================================================================
+   1. CORE Adaptive Mobile Viewport scaffold & Reset Engine
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    background-color: #1A202C; /* Dark aesthetic bounding background wrapper for desktop frames */
+    color: #2D3748;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* Master Centered Viewport Scaffold (Takes complete screen on mobile, boxes cleanly on desktop) */
+.app-fullscreen-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 480px; /* Clean mobile aspect-ratio bounding boxes on wide monitors */
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+.game-stage-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: block;
+}
+
+/* PWA Floating Installation Action Launcher */
+.pwa-floating-install-pill {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 200;
+    background-color: #1A202C;
+    color: #FFFFFF;
+    font-weight: 700;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   2. FLUTTER REPLICA TOP IN-GAME HUD LAYOUT CONFIGURATION
+   ========================================================================== */
+.flutter-hud-container {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    right: 20px;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    animation: fadeHUD 0.2s ease-in both;
+}
+
+.pillar-score-text {
+    font-size: 60px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hud-currency-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.currency-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    min-width: 85px;
+}
+
+.currency-chip.chip-apple { background-color: #FF7675; }
+.currency-chip.chip-egg { background-color: #FFEAA7; }
+.chip-icon { font-size: 1rem; }
+.chip-num { font-size: 0.95rem; font-weight: 900; color: #1A202C; }
+
+/* ==========================================================================
+   3. ABSOLUTE VIEW OVERLAYS CONFIGURATIONS MANAGEMENT
+   ========================================================================== */
+.ui-view-system-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.view-panel {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 24px;
+    pointer-events: auto;
+    background-color: transparent;
+}
+
+.view-panel.active-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Home Panel Screen Component Layouts */
+#screen-home {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    justify-content: center;
+    align-items: center;
+    animation: slideUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
+}
+
+.home-header-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 340px;
+}
+
+/* --- Modernized Top Dashboard Level & Profile Header Panel --- */
+.user-level-hub-panel {
+    width: 100%;
+    max-width: 340px;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+    margin-bottom: 24px;
+}
+
+.level-hub-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.user-meta-details {
+    text-align: left;
+}
+
+.user-display-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1A202C;
+    margin-bottom: 2px;
+}
+
+.level-numerical-badge {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #00B0FF;
+    letter-spacing: 0.5px;
+}
+
+.profile-avatar-node-large {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: #EDF2F7;
+    border: 2px solid #00B0FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 176, 255, 0.15);
+    transition: transform 0.1s linear;
+}
+.profile-avatar-node-large:active { transform: scale(0.92); }
+
+
+
+.level-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00B0FF, #00E676);
+    border-radius: 10px;
+    transition: width 0.4s ease-out;
+}
+
+/* --- Lifespan Pillar Counter Chip Component --- */
+.total-pillars-counter-chip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8F9FA;
+    border: 1px solid #EDF2F7;
+    border-radius: 10px;
+    padding: 8px 14px;
+}
+
+.pillars-counter-lbl {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #718096;
+    letter-spacing: 0.5px;
+}
+
+.pillars-counter-num {
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #1A202C;
+}
+
+/* ==========================================================================
+   4. MODERNIZED 6-LEVEL COIN CLAIMING QUEST BOARD MATRIX
+   ========================================================================== */
+.daily-quests-dashboard-card {
+    width: 100%;
+    max-width: 340px;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.quest-section-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #1A202C;
+    margin-bottom: 12px;
+    text-align: left;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.quests-scroll-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 210px; /* Kept tight to fit perfectly on mobile screens without scrolling the page */
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Individual Level Rows Layout Row Matrix */
+.quest-level-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #F8F9FA;
+    border: 1px solid #EDF2F7;
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+.quest-lvl-tag {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #4A5568;
+    min-width: 48px;
+}
+
+/* Center Horizontal Quest Trackers */
+.quest-progress-bar-container-middle {
+    flex: 1;
+    height: 8px;
+    background-color: #E2E8F0;
+    border-radius: 10px;
+    margin: 0 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.quest-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00B0FF, #00E676);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease-out;
+}
+
+/* Action Mission Buttons - Styled to match Home Screen Boxes */
+.quest-action-btn-node {
+    border: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
+    color: #4A5568;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 8px 12px;
+    border-radius: 8px;
+    min-width: 74px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.1s linear;
+}
+
+.quest-action-btn-node:active {
+    transform: scale(0.95);
+}
+
+/* Claim State: Glowing Neon Green Trigger Accent */
+.quest-level-item-row.state-claimable {
+    border-color: #00E676;
+    background-color: #F0FDF4;
+}
+
+.quest-level-item-row.state-claimable .quest-action-btn-node {
+    background: linear-gradient(135deg, #00E676, #00B0FF);
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 230, 118, 0.25);
+    font-weight: 900;
+}
+
+/* Completed State: Sleek Gray Disabled Look */
+.quest-level-item-row.state-claimed {
+    opacity: 0.6;
+    background-color: #EDF2F7;
+}
+
+.quest-level-item-row.state-claimed .quest-action-btn-node {
+    background-color: #E2E8F0;
+    color: #A0AEC0;
+    border: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   QUEST MODULE TASKS AND SYSTEM TIMERS STYLING
+   ========================================================================== */
+
+.modern-mission-task-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.03);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.mission-text-left-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    max-width: 70%;
+}
+
+.mission-main-title-lbl {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1E293B;
+    line-height: 1.3;
+}
+
+.mission-micro-instruction-hint {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+/* Rounded Compact Navigation Go Buttons Pushed onto the Left-Hand Side */
+.mission-left-go-btn {
+    order: -1; /* Pure flex layout logic shifting the action box to the absolute left margin */
+    margin-right: 14px;
+    padding: 8px 16px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    min-width: 65px;
+    transition: all 0.2s ease;
+}
+
+.mission-left-go-btn.state-btn-go {
+    background: #00B0FF;
+    color: #FFFFFF;
+    box-shadow: 0 3px 8px rgba(0, 176, 255, 0.25);
+}
+
+.mission-left-go-btn.state-btn-wait {
+    background: #FEF3C7;
+    color: #D97706;
+    cursor: not-allowed;
+}
+
+.mission-left-go-btn.state-btn-done {
+    background: #F1F5F9;
+    color: #94A3B8;
+    cursor: not-allowed;
+}
+
+.app-branding-title { font-size: 1.6rem; font-weight: 900; color: #1A202C; }
+.blue-text { color: #00B0FF; }
+
+/* Horizontal Container Grid Boxes */
+.menu-hub-grid { display: flex; gap: 16px; width: 100%; max-width: 340px; margin-bottom: 30px; }
+.menu-hub-box { flex: 1; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: all 0.1s linear; }
+.menu-hub-box:active { transform: scale(0.95); border-color: #00B0FF; }
+.box-emoji { font-size: 2rem; }
+.box-lbl { font-size: 0.75rem; font-weight: 800; color: #4A5568; text-align: center; }
+
+.primary-play-btn {
+    width: 100%; max-width: 340px;
+    background: linear-gradient(135deg, #00B0FF, #00E676);
+    color: #FFFFFF; font-size: 1.2rem; font-weight: 900;
+    border: none; padding: 18px; border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 176, 255, 0.35); cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.primary-play-btn:active { transform: scale(0.97); }
+
+/* ==========================================================================
+   5. GAME OVER & SCREEN LAYOUT PANELS INTERFACES
+   ========================================================================== */
+/* Crashed View Screen Overlay Layout */
+#screen-crash {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    justify-content: center;
+    align-items: center;
+    animation: scalePop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.15) both;
+}
+
+/* --- Modernized Top Dashboard Level Card Frame --- */
+.user-level-hub-panel {
+    width: 100%;
+    max-width: 340px;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 18px 18px 14px 18px; /* Compressed bottom padding space constraints */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+    margin-bottom: 24px;
+}
+
+.level-hub-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.user-meta-details { text-align: left; }
+.user-display-name { font-size: 1.15rem; font-weight: 800; color: #1A202C; margin-bottom: 2px; }
+.level-numerical-badge { font-size: 0.75rem; font-weight: 900; color: #00B0FF; letter-spacing: 0.5px; }
+
+.profile-avatar-node-large {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: #EDF2F7;
+    border: 2px solid #00B0FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 176, 255, 0.15);
+}
+
+/* --- Interactive Experience Track Framework with Tooltip Anchors --- */
+.level-progress-track-wrapper {
+    width: 100%;
+    height: 12px; /* Amplified slightly to make it an obvious mobile finger tap target */
+    background-color: #EDF2F7;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transform: translate3d(0,0,0);
+    /* FIX: Changed from hidden to visible so the floating bubble can render above the track bounds */
+    overflow: visible; 
+}
+.level-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00B0FF, #00E676);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.4s ease-out;
+}
+
+/* NEW: Floating Popover Info Bubble Component */
+.pillars-stat-popover-bubble {
+    position: absolute;
+    top: -38px;
+    left: 50%;
+    transform: translate3d(-50%, 10px, 0);
+    background-color: #1A202C;
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.15s linear;
+}
+
+/* Tiny popover triangle pointer pointing down toward the level bar */
+.pillars-stat-popover-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 4px 4px 0;
+    border-style: solid;
+    border-color: #1A202C transparent;
+    display: block;
+    width: 0;
+}
+
+/* ==========================================================================
+   FIXED: QUEST MATRIX HUB LAYOUT STRUCTURAL WRAPPERS
+   ========================================================================== */
+
+/* 1. Force the custom details panel to behave like a structured flex stack */
+#screen-quest-details {
+    background-color: #FFFFFF;
+    display: none; /* Controlled dynamically by showMenuPanel script */
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    z-index: 120;
+}
+
+/* Ensure active state overrides the hidden display parameter smoothly */
+#screen-quest-details.active-panel {
+    display: flex !important;
+}
+
+/* 2. Reusable Premium Ad Space Presentation Frame Box */
+.adsterra-premium-banner-space {
+    width: 100%;
+    height: 90px; /* Standard crisp mobile smart banner profile footprint */
+    background-color: #F8FAFC;
+    border-radius: 14px;
+    border: 1.5px dashed #CBD5E1; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4px;
+    box-sizing: border-box;
+    position: relative;
+    flex-shrink: 0; /* Prevents the ad zone from shrinking on small device rows */
+}
+
+.adsterra-sandbox-micro-label {
+    font-size: 0.52rem;
+    font-weight: 800;
+    color: #94A3B8;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 3. Real-Time 2-Hour Cooldown Counter Graphic Card Panel */
+.cooldown-lockout-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #FEF2F2;
+    border: 1px solid #FEE2E2;
+    border-radius: 14px;
+    padding: 16px;
+    box-sizing: border-box;
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.02);
+}
+
+.cooldown-timer-clock {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #EF4444;
+    background-color: #FFFFFF;
+    border: 1px solid #FEE2E2;
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-variant-numeric: tabular-nums; /* Prevents character shaking during ticks */
+    margin: 6px auto;
+}
+
+/* Toggled Class triggered via JavaScript Handler */
+.level-progress-track-wrapper.popover-visible .pillars-stat-popover-bubble {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+}
+
+.crashed-banner-title { color: #FF5252; font-size: 2rem; font-weight: 900; margin-bottom: 12px; }
+.scoreboard-container-box { display: flex; width: 100%; max-width: 340px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); }
+.score-column { flex: 1; text-align: center; }
+.score-column.border-right { border-right: 1px solid #EDF2F7; }
+.score-header-lbl { display: block; font-size: 0.75rem; font-weight: 800; color: #A0AEC0; margin-bottom: 4px; letter-spacing: 0.5px; }
+.score-numeric-display { font-size: 2rem; font-weight: 900; color: #1A202C; }
+
+.split-controls-row { display: flex; gap: 14px; width: 100%; max-width: 340px; }
+.split-action-btn { flex: 1; padding: 16px; font-size: 1rem; font-weight: 800; border-radius: 12px; border: none; cursor: pointer; transition: transform 0.1s linear; }
+.split-action-btn:active { transform: scale(0.96); }
+.primary-gradient-btn { background: linear-gradient(135deg, #00B0FF, #00E676); color: #FFFFFF; box-shadow: 0 4px 14px rgba(0,176,255,0.3); }
+.secondary-gray-btn { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; }
+
+/* Sub View Overlays Full Screen Framework Structure Panels */
+.sub-view-overlay {
+    background-color: #FFFFFF;
+    z-index: 110;
+    animation: slideRight 0.2s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+}
+
+.sub-view-header-row { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #EDF2F7; }
+.circular-back-arrow { width: 36px; height: 36px; border-radius: 50%; border: none; background-color: #EDF2F7; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Integrated Conversion Bank Hub Configurations */
+.bank-wallet-indicator { display: flex; flex-direction: column; align-items: flex-end; background-color: #F0F9FF; border: 1px solid #BEE3F8; padding: 6px 14px; border-radius: 10px; }
+.wallet-mini-lbl { font-size: 0.55rem; font-weight: 800; color: #00B0FF; }
+.wallet-mini-val { font-size: 1rem; font-weight: 900; color: #2B6CB0; }
+
+.bank-currency-card { background: linear-gradient(135deg, #1A202C, #2D3748); border-radius: 16px; padding: 24px; text-align: center; color: #FFFFFF; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.bank-card-lbl { font-size: 0.8rem; color: #A0AEC0; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.bank-card-val { font-size: 2.25rem; font-weight: 900; }
+
+.exchange-rates-vertical-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.exchange-tier-row { display: flex; align-items: center; justify-content: space-between; background-color: #F8F9FA; border: 1px solid #E2E8F0; padding: 14px 18px; border-radius: 12px; }
+.tier-txt { font-weight: 700; font-size: 0.9rem; color: #4A5568; }
+.tier-val-indicator { font-weight: 800; color: #00B0FF; font-size: 1.1rem; }
+.exchange-trigger-btn { background-color: #EDF2F7; border: none; color: #A0AEC0; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; }
+.exchange-tier-row.eligible { border-color: #00E676; background-color: #F0FDF4; }
+.exchange-tier-row.eligible .exchange-trigger-btn { background-color: #00E676; color: #FFFFFF; cursor: pointer; box-shadow: 0 4px 10px rgba(0,230,118,0.25); }
+
+/* Withdrawal Payout UI Blocks */
+.instant-withdrawal-form-box { background-color: #F8F9FA; border-radius: 16px; padding: 20px; border: 1px solid #E2E8F0; }
+.input-element-group { margin-bottom: 14px; }
+.input-element-group label { display: block; font-size: 0.8rem; font-weight: 700; color: #718096; margin-bottom: 6px; }
+.input-element-group input { width: 100%; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px; font-size: 1rem; outline: none; background-color: #FFFFFF; font-weight: 600; }
+.input-element-group input:focus { border-color: #00B0FF; }
+.execute-payout-btn { width: 100%; padding: 16px; border-radius: 10px; border: none; background-color: #E2E8F0; color: #A0AEC0; font-weight: 800; font-size: 1rem; transition: all 0.1s linear; }
+.execute-payout-btn.unlocked { background: linear-gradient(135deg, #00E676, #00B0FF); color: #FFFFFF; cursor: pointer; box-shadow: 0 4px 12px rgba(0,230,118,0.3); }
+.form-micro-copy-alert { text-align: center; font-size: 0.75rem; color: #FF5252; margin-top: 10px; font-weight: 500; }
+.form-micro-copy-alert.passed { color: #10B981; }
+
+/* Shop Layout Components Grid Elements */
+.shop-currency-pills-row { display: flex; gap: 8px; }
+.pill-token-node { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; color: #1A202C; background-color: #EDF2F7; }
+.pill-token-node.node-apple { background-color: #FEF2F2; border: 1px solid #FCA5A5; }
+.pill-token-node.node-egg { background-color: #FEF3C7; border: 1px solid #FCD34D; }
+.rarity-legend-strip { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 800; color: #718096; margin-bottom: 16px; background-color: #EDF2F7; padding: 10px; border-radius: 10px; }
+.legend-chip { display: flex; align-items: center; gap: 4px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.d-c { background-color: #94A3B8; }
+.d-r { background-color: #3B82F6; }
+.d-e { background-color: #A855F7; }
+.d-m { background-color: #D97706; }
+.shop-matrix-grid-scroll-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; overflow-y: auto; flex: 1; padding-bottom: 24px; -webkit-overflow-scrolling: touch; }
+.shop-skin-card { background-color: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 14px; padding: 12px 4px; text-align: center; cursor: pointer; }
+.shop-skin-card.selected-active { border-color: #00B0FF !important; background-color: #F0F9FF; }
+.skin-card-canvas-node { display: block; margin: 0 auto 6px auto; }
+.skin-card-title { font-size: 0.65rem; font-weight: 800; color: #4A5568; margin-bottom: 4px; }
+.skin-card-cost-lbl { font-size: 0.65rem; font-weight: 900; color: #718096; }
+.shop-skin-card.unlocked-owned .skin-card-cost-lbl { color: #10B981; }
+
+/* Profile View Box Cards */
+.profile-card-layout-box { background-color: #F8F9FA; border: 1px solid #E2E8F0; border-radius: 16px; padding: 24px; text-align: center; }
+.profile-avatar-circle-large { width: 80px; height: 80px; background-color: #FFFFFF; border: 2px solid #00B0FF; border-radius: 50%; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.profile-row-field { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #EDF2F7; font-weight: 600; }
+.profile-row-field .lf { color: #718096; }
+.profile-row-field .rt { color: #1A202C; }
+.verified-badge { color: #10B981 !important; font-weight: 700; }
+
+/* ==========================================================================
+   6. MICRO INTERACTIVE HARDWARE ACCELERATED TRANSITIONS
+   ========================================================================== */
+@keyframes slideUp { from { transform: translate3d(0, 30px, 0); opacity: 0; } to { transform: translate3d(0,0,0); opacity: 1; } }
+@keyframes scalePop { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes slideRight { from { transform: translate3d(40px, 0, 0); opacity: 0; } to { transform: translate3d(0,0,0); opacity: 1; } }
+@keyframes fadeHUD { from { opacity: 0; } to { opacity: 1; } }
